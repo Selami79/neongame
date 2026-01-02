@@ -3,8 +3,12 @@ window.onload = function () {
     const urlParams = new URLSearchParams(window.location.search);
     const player_name = urlParams.get('player');
 
+    // DEBUG: Show URL parameters on screen to verify
+    const sl_url = urlParams.get('sl_url');
+    console.log("DEBUG: SL URL found:", sl_url);
+    console.log("DEBUG: Player found:", player_name);
+
     if (player_name) {
-        // If player name is in URL, auto-fill and lock input
         var input = document.getElementById('playerName');
         if (input) {
             input.value = player_name;
@@ -16,39 +20,65 @@ window.onload = function () {
 };
 
 function submitToSL() {
+    // Visual Debug Helper
+    var debugDiv = document.getElementById('debugOutput');
+    if (!debugDiv) {
+        debugDiv = document.createElement('div');
+        debugDiv.id = 'debugOutput';
+        debugDiv.style.color = 'yellow';
+        debugDiv.style.fontSize = '12px';
+        debugDiv.style.marginTop = '10px';
+        document.getElementById('slInputArea').appendChild(debugDiv);
+    }
+    debugDiv.innerHTML = "Status: Starting Submission...";
+
     var name = document.getElementById('playerName').value;
     if (!name) { alert("Please enter your name!"); return; }
 
-    // Get SL URL from query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const sl_url = urlParams.get('sl_url');
 
+    debugDiv.innerHTML += "<br>URL: " + (sl_url ? "FOUND" : "MISSING");
+
     if (sl_url) {
-        var data = JSON.stringify({
+        // Safe check for score existence
+        var finalScore = (typeof score !== 'undefined') ? score : 0;
+
+        var dataPayload = {
             "name": name,
-            "score": score
-        });
+            "score": finalScore
+        };
+
+        var jsonString = JSON.stringify(dataPayload);
+        debugDiv.innerHTML += "<br>Payload: " + jsonString;
 
         fetch(sl_url, {
             method: 'POST',
+            cache: 'no-cache',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json' // LSL needs explicit content type roughly
             },
-            body: data
+            body: jsonString
         }).then(response => {
-            // alert("Score Submitted!"); 
-            // In-game visual feedback instead of popup
-            var btn = document.querySelector("#slInputArea button");
-            if (btn) {
-                btn.innerHTML = "✅ SENT!";
-                btn.style.background = "#0f0";
-                btn.disabled = true;
+            debugDiv.innerHTML += "<br>Response Status: " + response.status;
+            if (response.ok) {
+                var btn = document.querySelector("#slInputArea button");
+                if (btn) {
+                    btn.innerHTML = "✅ SENT!";
+                    btn.style.background = "#0f0";
+                    btn.disabled = true;
+                }
+                debugDiv.innerHTML += "<br>SUCCESS!";
+            } else {
+                debugDiv.innerHTML += "<br>Server Error: " + response.statusText;
             }
         }).catch(error => {
             console.error("SL Error:", error);
-            alert("Connection Error. Try again.");
+            debugDiv.innerHTML += "<br>FETCH ERROR: " + error.message;
+            alert("Connection Error:\n" + error.message);
         });
     } else {
-        alert("Offline Mode: Score cannot be saved to SL.");
+        debugDiv.innerHTML += "<br>CRITICAL: No LSL URL found in address bar.";
+        alert("Offline Mode: Score cannot be saved to SL. (Missing sl_url)");
     }
 }
