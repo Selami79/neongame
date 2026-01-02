@@ -14,6 +14,7 @@ function scaleCanvas() {
 	};
 
 	if (window.devicePixelRatio) {
+		var grey = '#333';
 		var cw = $("#canvas").attr('width');
 		var ch = $("#canvas").attr('height');
 
@@ -36,6 +37,7 @@ function scaleCanvas() {
 function setBottomContainer() {
 	var buttonOffset = $("#buttonCont").offset().top;
 	var playOffset = trueCanvas.height / 2 + 100 * settings.scale;
+	drawPolygon(trueCanvas.width / 2, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2 / Math.sqrt(3)) + settings.hexWidth, 30, grey, false, 6);
 	var delta = buttonOffset - playOffset - 29;
 	if (delta < 0) {
 		$("#bottomContainer").css("margin-bottom", "-" + Math.abs(delta) + "px");
@@ -216,8 +218,9 @@ function setStartScreen() {
 	if (isStateSaved()) {
 		importing = 0;
 	} else {
-		importing = 1;
+		importing = 0; // Force resetting text opacity
 	}
+
 
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
