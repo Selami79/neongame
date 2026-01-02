@@ -1,4 +1,4 @@
-// HEXTRIS NEON - Second Life Ultimate Script (DEBUG MODE)
+// HEXTRIS NEON - Second Life Ultimate Script (Production Version)
 // Created by Gemini for Selami
 
 string GAME_BASE_URL = "https://selami79.github.io/weboyun/index.html";
@@ -6,7 +6,6 @@ string my_url = "";
 string current_player_name = "";
 integer SCREEN_FACE = -1; 
 integer RESET_PRIM_LINK = -1; 
-
 // High Score Data
 list highScores = []; 
 integer MAX_SCORES = 10;
@@ -65,9 +64,6 @@ LoadGame(integer face, string player_name)
         final_url += "&player=" + llEscapeURL(player_name);
     }
     
-    // DEBUG: URL'i chatte goster
-    llOwnerSay("DEBUG: Loading Game URL: " + final_url);
-    
     llSetPrimMediaParams(face, [
         PRIM_MEDIA_AUTO_PLAY, TRUE,
         PRIM_MEDIA_CURRENT_URL, final_url,
@@ -77,9 +73,9 @@ LoadGame(integer face, string player_name)
         PRIM_MEDIA_PERMS_CONTROL, PRIM_MEDIA_PERM_NONE,
         PRIM_MEDIA_PERMS_INTERACT, PRIM_MEDIA_PERM_ANYONE,
         PRIM_MEDIA_FIRST_CLICK_INTERACT, TRUE,
-        PRIM_MEDIA_AUTO_SCALE, TRUE, 
-        PRIM_MEDIA_AUTO_ZOOM, TRUE
-         ]);
+        PRIM_MEDIA_AUTO_SCALE, FALSE, 
+        PRIM_MEDIA_AUTO_ZOOM, FALSE
+    ]);
 }
 
 default
@@ -96,52 +92,29 @@ default
         if (method == URL_REQUEST_GRANTED)
         {
             my_url = body;
-            llOwnerSay("DEBUG: Secure URL Generated: " + my_url);
+            llOwnerSay("System Ready. Secure URL Generated.");
             DisplayHighScores(); 
         }
         else if (method == "POST")
         {
-            llOwnerSay("DEBUG: POST Received! Body: " + body);
-            
-            // CORS Headers must be sent with EVERY response logic
-            list cors_headers = [
-                "Access-Control-Allow-Origin", "*",
-                "Access-Control-Allow-Methods", "POST, GET, OPTIONS",
-                "Access-Control-Allow-Headers", "Content-Type"
-            ];
-            
+            // CORS Handling (Simplified for Production)
             string name = llJsonGetValue(body, ["name"]);
             string score_str = llJsonGetValue(body, ["score"]);
-            
-            llOwnerSay("DEBUG: Parsed Name: " + name + " | Score: " + score_str);
             
             integer score = (integer)score_str;
             
             if(name != JSON_INVALID && score_str != JSON_INVALID) {
                 UpdateHighScores(name, score);
-                // Send 200 OK with Headers (Important: Headers must be part of response!)
-                // LSL llHTTPResponse handles raw body, sadly setting headers explicitly is limited in standard LSL
-                // But for simple CORS, usually just replying is enough IF the browser allows it.
-                // NOTE: LSL does not support custom headers in response easily without full HTTP-IN control.
-                // However, modern viewers and CEF usually accept standard responses if Origin matches or is *.
-                
                 llHTTPResponse(id, 200, "OK");
                 llSay(0, "✅ New High Score! " + name + ": " + (string)score);
             } else {
-                llOwnerSay("DEBUG: Invalid JSON or Data Missing");
                 llHTTPResponse(id, 400, "Bad JSON");
             }
         }
         else if (method == "OPTIONS")
         {
-             llOwnerSay("DEBUG: Method OPTIONS called (Preflight Check)");
-             // Preflight icin sadece 200 donuyoruz, headerlari body ile simule edemeyiz ama deneriz.
+             // Preflight Check
              llHTTPResponse(id, 200, "OK");
-        }
-        else 
-        {
-             llOwnerSay("DEBUG: Unknown Method: " + method);
-             llHTTPResponse(id, 405, "Method Not Allowed");
         }
     }
     
@@ -172,7 +145,7 @@ default
         string new_player = llDetectedName(0);
         current_player_name = new_player;
         
-        // llSay(0, "DEBUG: Loading for " + current_player_name);
+        llSay(0, "👋 Hosgeldin " + current_player_name + "! Oyun senin icin baslatiliyor...");
         LoadGame(SCREEN_FACE, current_player_name);
     }
     
