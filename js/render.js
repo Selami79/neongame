@@ -1,7 +1,7 @@
 function render() {
-	var grey = '#111';
+	var grey = '#bdc3c7';
 	if (gameState === 0) {
-		grey = "#050510";
+		grey = "#bdc3c7";
 	}
 
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
@@ -11,9 +11,9 @@ function render() {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		ctx.strokeStyle = '#00f3ff';
+		ctx.strokeStyle = 'rgba(0,0,0,0)';
 		ctx.lineWidth = 2;
-		drawPolygon(trueCanvas.width / 2, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2 / Math.sqrt(3)) + settings.hexWidth, 30, grey, 2, '#00f3ff');
+		drawPolygon(trueCanvas.width / 2, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2 / Math.sqrt(3)) + settings.hexWidth, 30, grey, 2, 'rgba(0,0,0,0)');
 
 		drawTimer();
 		ctx.globalAlpha = 1;
@@ -86,13 +86,13 @@ function renderBeginningText() {
 		score_text = 'Match 3+ blocks to score!'
 		fontSize = 27
 	}
-	renderText((trueCanvas.width) / 2 + 2 * settings.scale, upperheight - 0 * settings.scale, fontSize, '#00f3ff', input_text);
-	renderText((trueCanvas.width) / 2 + 2 * settings.scale, upperheight + 33 * settings.scale, fontSize, '#00f3ff', action_text);
+	renderText((trueCanvas.width) / 2 + 2 * settings.scale, upperheight - 0 * settings.scale, fontSize, '#2c3e50', input_text);
+	renderText((trueCanvas.width) / 2 + 2 * settings.scale, upperheight + 33 * settings.scale, fontSize, '#2c3e50', action_text);
 	if (!mob) {
 		drawKey("", (trueCanvas.width) / 2 + 2 * settings.scale - 2.5, upperheight + 38 * settings.scale);
 	}
 
-	renderText((trueCanvas.width) / 2 + 2 * settings.scale, lowerheight, fontSize, '#00f3ff', score_text);
+	renderText((trueCanvas.width) / 2 + 2 * settings.scale, lowerheight, fontSize, '#2c3e50', score_text);
 }
 
 function drawKey(key, x, y) {

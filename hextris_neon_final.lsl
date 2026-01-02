@@ -4,7 +4,7 @@
 string GAME_BASE_URL = "https://selami79.github.io/weboyun/index.html";
 string my_url = "";
 string current_player_name = "";
-integer SCREEN_FACE = -1; 
+integer SCREEN_FACE = 0; // Sabit Face 0
 integer RESET_PRIM_LINK = -1; 
 
 // High Score Data
@@ -144,20 +144,12 @@ default
         }
 
         // --- GAME START LOGIC ---
-        integer touched_face = llDetectedTouchFace(0);
-        
-        if(touched_face == -1) {
-            // Mesh yuzey hatasi alirsa, daha once kullandigimiz yuzeyi (varsa) kullan
-            if(SCREEN_FACE != -1) touched_face = SCREEN_FACE;
-            else touched_face = 0; // Varsayilan
-        }
-
-        if(SCREEN_FACE != touched_face) SCREEN_FACE = touched_face;
+        // Sadece Face 0'da calissin
+        SCREEN_FACE = 0;
 
         string new_player = llDetectedName(0);
         current_player_name = new_player;
         
-        // llSay(0, "Game Starting...");
         LoadGame(SCREEN_FACE, current_player_name);
     }
     
