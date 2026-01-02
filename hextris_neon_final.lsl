@@ -1,4 +1,4 @@
-// HEXTRIS NEON - Second Life Ultimate Script (Production Version)
+// HEXTRIS NEON - Second Life Ultimate Script (Instant Load Fix)
 // Created by Gemini for Selami
 
 string GAME_BASE_URL = "https://selami79.github.io/weboyun/index.html";
@@ -6,6 +6,7 @@ string my_url = "";
 string current_player_name = "";
 integer SCREEN_FACE = -1; 
 integer RESET_PRIM_LINK = -1; 
+
 // High Score Data
 list highScores = []; 
 integer MAX_SCORES = 10;
@@ -64,21 +65,24 @@ LoadGame(integer face, string player_name)
         final_url += "&player=" + llEscapeURL(player_name);
     }
     
-    llSetText("Loading...", <1,1,1>, 1.0); // Show loading status on root/screen temporarily
+    // Yükleniyor yazısı
+    llSetText("⌛", <1,1,1>, 1.0); 
+
     llSetPrimMediaParams(face, [
-        PRIM_MEDIA_AUTO_PLAY, TRUE,
+        PRIM_MEDIA_AUTO_PLAY, TRUE,         // Otomatik Oynat
         PRIM_MEDIA_CURRENT_URL, final_url,
         PRIM_MEDIA_HOME_URL, final_url,
         PRIM_MEDIA_HEIGHT_PIXELS, 1024,
         PRIM_MEDIA_WIDTH_PIXELS, 1024,
-        PRIM_MEDIA_PERMS_CONTROL, PRIM_MEDIA_PERM_NONE,
+        PRIM_MEDIA_PERMS_CONTROL, PRIM_MEDIA_PERM_NONE, // Bar'i gizle
         PRIM_MEDIA_PERMS_INTERACT, PRIM_MEDIA_PERM_ANYONE,
-        PRIM_MEDIA_FIRST_CLICK_INTERACT, TRUE,
+        PRIM_MEDIA_FIRST_CLICK_INTERACT, TRUE, // ILK TIKLAMA ONEMLI
         PRIM_MEDIA_AUTO_SCALE, TRUE, 
         PRIM_MEDIA_AUTO_ZOOM, TRUE
     ]);
-    llSleep(2.0);
-    llSetText("", <0,0,0>, 0.0); // Clear text after a short delay
+    
+    llSleep(1.0);
+    llSetText("", <0,0,0>, 0.0);
 }
 
 default
@@ -95,15 +99,14 @@ default
         if (method == URL_REQUEST_GRANTED)
         {
             my_url = body;
-            llOwnerSay("System Ready. Secure URL Generated.");
+            llOwnerSay("System Ready.");
             DisplayHighScores(); 
         }
         else if (method == "POST")
         {
-            // CORS Handling (Simplified for Production)
+            // CORS Handling 
             string name = llJsonGetValue(body, ["name"]);
             string score_str = llJsonGetValue(body, ["score"]);
-            
             integer score = (integer)score_str;
             
             if(name != JSON_INVALID && score_str != JSON_INVALID) {
@@ -116,7 +119,6 @@ default
         }
         else if (method == "OPTIONS")
         {
-             // Preflight Check
              llHTTPResponse(id, 200, "OK");
         }
     }
@@ -130,7 +132,9 @@ default
         if (touched_name == "reset" || (RESET_PRIM_LINK != -1 && touched_link == RESET_PRIM_LINK))
         {
             llSay(0, "🔄 Resetting Game Screen...");
+            
             if(SCREEN_FACE != -1) {
+                // Sadece sayfayi temizle, texture kendiliginden gorunecektir
                 llClearPrimMedia(SCREEN_FACE); 
             } else {
                  llClearPrimMedia(0); llClearPrimMedia(1); llClearPrimMedia(2); llClearPrimMedia(3); llClearPrimMedia(4);
@@ -141,14 +145,19 @@ default
 
         // --- GAME START LOGIC ---
         integer touched_face = llDetectedTouchFace(0);
-        if(touched_face == -1) return;
+        
+        if(touched_face == -1) {
+            // Mesh yuzey hatasi alirsa, daha once kullandigimiz yuzeyi (varsa) kullan
+            if(SCREEN_FACE != -1) touched_face = SCREEN_FACE;
+            else touched_face = 0; // Varsayilan
+        }
 
         if(SCREEN_FACE != touched_face) SCREEN_FACE = touched_face;
 
         string new_player = llDetectedName(0);
         current_player_name = new_player;
         
-        llSay(0, "👋 Hosgeldin " + current_player_name + "! Oyun senin icin baslatiliyor...");
+        // llSay(0, "Game Starting...");
         LoadGame(SCREEN_FACE, current_player_name);
     }
     
