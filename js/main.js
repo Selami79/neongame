@@ -362,7 +362,7 @@ function showHelp() {
 		}
 	}
 
-	$("#inst_main_body").html("<div id='instructions_head'>HOW TO PLAY</div><p>Rotate the Hexagon to prevent blocks from stacking outside the outer gray hexagon.</p><p>Use Arrow Keys or Tap Left/Right to rotate.</p><p>Connect 3+ blocks of the same color to clear them.</p><p>Good Luck!</p>");
+	$("#inst_main_body").html("<div id='instructions_head'>HOW TO PLAY</div><p>Rotate the Hexagon to prevent blocks from stacking outside the outer gray hexagon.</p><p>Use Arrow Keys or Tap Left/Right to rotate.</p><p>Connect 3+ blocks of the same color to clear them.</p><p>Good Luck!</p><hr><div id='instructions_head'>NASIL OYNANIR</div><p>Blokların gri alanın dışına taşmasını engellemek için Altıgeni çevirin.</p><p>Çevirmek için Ok Tuşlarını kullanın veya Ekrana Dokunun.</p><p>3 aynı renk bloğu birleştirip yok edin.</p><p>Bol Şans!</p>");
 	if (gameState == 1) {
 		pause();
 	}
