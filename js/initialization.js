@@ -72,7 +72,7 @@ function initialize(a) {
 		settings = {
 			os: "other",
 			platform: "nonmobile",
-			baseScale: 0.6,
+			baseScale: 0.45,
 			startDist: 340,
 			creationDt: 9,
 			scale: 1,
